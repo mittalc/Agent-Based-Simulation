@@ -82,10 +82,10 @@ to go
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-345
-11
-782
-449
+210
+10
+647
+448
 -1
 -1
 13.0
@@ -126,7 +126,7 @@ NIL
 1
 
 BUTTON
-790
+793
 52
 913
 85
@@ -160,7 +160,7 @@ HORIZONTAL
 PLOT
 0
 179
-328
+200
 454
 spread
 days
@@ -198,10 +198,10 @@ ticks
 11
 
 SLIDER
-933
-50
-1059
-83
+646
+54
+772
+87
 infected_probability
 infected_probability
 0
