@@ -9,3 +9,5 @@ be getting, will show how much time can have a huge impact on the trajectory of
 the disease. This is an open-sourcing toolset for researchers and data scientists to
 better model and understand the progression of COVID-19 in a given community
 over time.
+
+![Alt text](slider_3.png)
