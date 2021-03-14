@@ -5,7 +5,7 @@
 ;red depicts infected - done - chirag
 ;green depicts recovered -tbd - daljeet
 ;white depicts dead - tbd - elias
-;black depicts vaccinated - tbd - jeel
+;yellow depicts vaccinated - tbd - jeel
 ;
 ;notes - Chirag Mittal
 ;Make sure to add sliders, buttons etc as needed
@@ -22,6 +22,9 @@
 globals
 [
   infected
+  recovered
+  immune?
+  immuned
 ]
 
 
@@ -40,7 +43,7 @@ to setup
   ]
 
     ;infect
-   ask n-of 1 turtles
+   ask n-of 4 turtles
   [
 
       set color red   ; red denotes infected
@@ -75,9 +78,35 @@ to go
   ]
   set infected (count turtles with [color = red] / count turtles) * 100
 
-  if infected = 100
+
+  ;recover neighbours
+  recover-infected
+  set recovered (count turtles with [color = green] / count turtles) * 100
+  set immuned (count turtles with [color = yellow] / count turtles) * 100
+
+  if recovered = 100 OR immuned = 100 OR infected = 100 OR infected = 0
   [
     stop
+  ]
+end
+
+
+to recover-infected ;;I -> R;recover neighbours
+  if count turtles with [color = red] > 0 [
+  ask n-of 1 turtles with [color = red]
+  [
+    if random 100 < recovery_efficiency
+    [
+      ifelse immunity = 1
+      [
+        set immune? true
+        set color yellow
+      ]
+      [
+        set color green
+      ]
+    ]
+  ]
   ]
 end
 @#$#@#$#@
@@ -174,6 +203,7 @@ false
 "" ""
 PENS
 "default" 1.0 0 -16777216 true "" "plot infected"
+"pen-1" 1.0 0 -13840069 true "" "plot recovered"
 
 MONITOR
 13
@@ -200,17 +230,69 @@ ticks
 SLIDER
 933
 50
-1059
+1083
 83
 infected_probability
 infected_probability
 0
 100
-21.0
+6.0
 1
 1
 NIL
 HORIZONTAL
+
+SLIDER
+935
+93
+1085
+126
+recovery_efficiency
+recovery_efficiency
+0
+100
+45.0
+1
+1
+NIL
+HORIZONTAL
+
+MONITOR
+41
+117
+111
+162
+recovered
+recovered
+1
+1
+11
+
+SLIDER
+936
+136
+1083
+169
+immunity
+immunity
+0
+1
+0.0
+1
+1
+NIL
+HORIZONTAL
+
+MONITOR
+127
+117
+189
+162
+immuned
+immuned
+1
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
