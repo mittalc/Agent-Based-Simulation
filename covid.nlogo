@@ -23,6 +23,7 @@ globals
 [
   infected
   recovered
+  dead
   immune?
   immuned
 ]
@@ -51,6 +52,15 @@ to setup
   ]
 
   set infected (count turtles with [color = red] / count turtles) * 100
+
+; dead
+  ask n-of 0 turtles
+  [
+    set color white ; white denotes dead
+
+  ]
+
+  set dead (count turtles with [color = white] / count turtles) * 100
 end
 
 
@@ -109,6 +119,16 @@ to recover-infected ;;I -> R;recover neighbours
   ]
   ]
 end
+
+to dead-infected ; dead turtles
+  if count turtles with [color = red] > 0[
+    ask n-of 1 turtles with [color = red] [
+      if random 100 > recovery_efficiency [
+        if dead = 1 [
+          set dead true
+          set color white ]]]]
+end
+
 @#$#@#$#@
 GRAPHICS-WINDOW
 345
