@@ -10,7 +10,7 @@ leading to positive impacts on the evolution of COVID-19.
 * Netlogo
 * HTML
 
-# Contributorss
+# Contributors
 * Chirag Mittal
 * Daljeet Singh
 * Jeel Bera
