@@ -16,5 +16,9 @@ leading to positive impacts on the evolution of COVID-19.
 * Jeel Bera
 * Md Elias Khan
 
-# Screenshot
+# Methodology - Agile
+* Project Proposal - https://pdfhost.io/v/~Cn.76YwA_Project_proposalpdf.pdf
+* Iteration 1 Report - https://pdfhost.io/v/3AhadJw9F_Milestone_Ipdf.pdf
+
+# Screenshot- 1st Iteration
 ![Alt text](slider_3.png)
