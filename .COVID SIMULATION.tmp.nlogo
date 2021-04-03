@@ -40,7 +40,7 @@ to setup-turtles
       get-healthy
       ifelse random 100 < mobility-probability [set mobile? true] [set mobile? false] ]
   ask n-of 2 turtles
-   [set isInfected? true ]
+    [ get-sic ]
 end
 
 to get-sick ;; turtle procedure
