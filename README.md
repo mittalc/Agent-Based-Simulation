@@ -33,5 +33,5 @@ leading to positive impacts on the evolution of COVID-19.
 * Switch on or off the immunity - when turned off, recovered people will not get immuned - can go infected again
 * Press go - If infected probability > recovery_efficiency, after some days complete population will be infected
 
-# Screenshot- 1st Iteration
-![Alt text](slider_3.png)
+# Screenshot
+![Alt text](Screenshot.png)
