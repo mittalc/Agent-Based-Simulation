@@ -1,143 +1,156 @@
-;
-;phase 1
-;ui layout - done - Chirag
-;blue depicts healthy - done - chirag
-;red depicts infected - done - chirag
-;green depicts recovered -tbd - daljeet
-;white depicts dead - tbd - elias
-;yellow depicts vaccinated - tbd - jeel
-;
-;notes - Chirag Mittal
-;Make sure to add sliders, buttons etc as needed
-;Link your code to the UI.
-;Make sure to verify code by clicking the check button up.
-;Try to create error free and maintain comments and indentation.
-;Add globals and turtle properties whenever needed.
-;Create a branch only. Try not to commit to the main branch directly.
-
-
-
-
-;setup global variables
 globals
-[
-  infected
-  recovered
-  dead
-  immune?
-  immuned
-]
+  [ %vaccinated
+    %infected            ;; what % of the population is infectious
+    %immune              ;; what % of the population is immune
+    stopTheProg?         ;; end the simulation if %infected==0
+    isVaccinated?
+    lifespan             ;; the lifespan of a turtle
+    immunity-duration    ;; how many days immunity lasts
+
+  ]
+
+turtles-own
+  [ isInfected?                ;; if turtle-infected or not
+    oldAge?                    ;; if turtleAge>65
+    myChanceOfRecovery         ;; if oldAge? true, recoveryForElders else recoveryForOtherThanElders
+    remaining-immunity         ;; days of immunity the turtle has left
+    durationForWhichInfected   ;; days for the turtle has been infectious
+    ageOfPerson                ;; age of person
+    mobile? ]                  ;; if mobility of person is true or false
 
 
-
-;setting up turtles
 to setup
   clear-all
+  setup-constants
+  setup-turtles
+  update-global-variables
+  update-display
   reset-ticks
+end
+
+
+to setup-turtles
   create-turtles population
-  [
-    set shape "person"
-    set color blue    ; blue meaning healthy
+    [ setxy random-pxcor random-pycor
+      set ageOfPerson random lifespan
+      ifelse ageOfPerson > 365 * 65 [ set oldAge? true ] [ set oldAge? false ]
+      set durationForWhichInfected 0
+      set remaining-immunity 0
+      set size 2
+      get-healthy
+      ifelse random 100 < mobility-probability [set mobile? true] [set mobile? false] ]
+  ask n-of 2 turtles
+    [ get-sick ]
+end
 
+to get-sick ;; turtle procedure
+  ifelse random 100 > vaccinated[
+  set isVaccinated? false
+  set isInfected? true
+    set remaining-immunity 0]
+  [ set isVaccinated? true
+    set isInfected? false]
+end
 
-    setxy random-pxcor random-pycor
-  ]
+to get-healthy ;; turtle procedure
+  set isInfected? false
+  set remaining-immunity 0
+  set durationForWhichInfected 0
+end
 
-    ;infect
-   ask n-of 4 turtles
-  [
-
-      set color red   ; red denotes infected
-
-  ]
-
-  set infected (count turtles with [color = red] / count turtles) * 100
-
-; dead
-  ask n-of 0 turtles
-  [
-    set color white ; white denotes dead
-
-  ]
-
-  set dead (count turtles with [color = white] / count turtles) * 100
+to become-immune ;; turtle procedure
+  set isInfected? false
+  set durationForWhichInfected 0
+  set remaining-immunity immunity-duration
 end
 
 
 
+to setup-constants
+  set lifespan 90 * 365      ;; 90 times 365 days = 50 years = 32850 days old
+  set immunity-duration 265  ;; this value is approximated for the sake of testing, not based in scientific knowledge.
+  set stopTheProg? false
+end
 
 to go
-  tick
-  ask turtles
-  [
-  forward random 4
-  left random 10
-  right random 10
-  ]
-
-
-  ;infect neighbours
-  ask turtles with [color = red][
-
-   ask other turtles in-radius 1
-    [
-    if random 100 < infected_probability
-    [set color red ]
-
-  ]
-  ]
-  set infected (count turtles with [color = red] / count turtles) * 100
-
-
-  ;recover neighbours
-  recover-infected
-  set recovered (count turtles with [color = green] / count turtles) * 100
-  set immuned (count turtles with [color = yellow] / count turtles) * 100
-
-  if recovered = 100 OR immuned = 100 OR infected = 100 OR infected = 0
-  [
-    stop
-  ]
-end
-
-
-to recover-infected ;;I -> R;recover neighbours
-  if count turtles with [color = red] > 0 [
-  ask n-of 1 turtles with [color = red]
-  [
-    if random 100 < recovery_efficiency
-    [
-      ifelse immunity = 1
-      [
-        set immune? true
-        set color yellow
-      ]
-      [
-        set color green
-      ]
+  if not stopTheProg?
+  [ ask turtles [
+     get-older
+     move
+     if isInfected? [ recover-or-die ]
+     if isInfected? [infect ]
     ]
-  ]
+   update-global-variables
+   update-display
+   tick
   ]
 end
 
-to dead-infected ; dead turtles
-  if count turtles with [color = red] > 0[
-    ask n-of 1 turtles with [color = red] [
-      if random 100 > recovery_efficiency [
-        if dead = 1 [
-          set dead true
-          set color white ]]]]
+to update-global-variables
+  if count turtles > 0
+    [ set %infected (count turtles with [ isInfected? ] / count turtles) * 100
+      set %immune (count turtles with [ immune? ] / count turtles) * 100
+      set stopTheProg? %infected = 0 ] ;;the simulation ends when no turtles are infected
+end
+
+to update-display
+  ask turtles
+    [
+      if turtle-shape = "shapeOfPerson" [ ifelse ageOfPerson > 65 * 365 [ set shape "person farmer" ][ set shape "person"]]
+      set color ifelse-value isInfected? [ red ] [ ifelse-value immune? [ grey ] [ green ] ] ]
+end
+
+
+to get-older ;; turtle procedure
+  ifelse ageOfPerson > lifespan [ die ] [if ageOfPerson > 65 * 365 [ set oldAge? true ] ]
+  if immune? [ set remaining-immunity remaining-immunity - 1 ]
+  if isInfected? [ set durationForWhichInfected durationForWhichInfected + 1 ]
+end
+
+
+to move ;; turtle procedure
+  rt random 100
+  lt random 100
+  ifelse random 100 < mobility-probability [set mobile? true] [set mobile? false]
+  if mobile? [ fd 1 ]
+  ;;fd 1
+end
+
+;; If a turtle is sick, it infects other turtles on the same patch.
+;; Immune turtles don't get sick.
+to infect ;; turtle procedure
+  ask other turtles-here with [ not isInfected? and not immune? ]
+    [ if random-float 100 < infection-probability
+      [ get-sick ] ]
+end
+
+;; Once the turtle has been sick long enough, it
+;; either recovers (and becomes immune) or it dies.
+to recover-or-die ;; turtle procedure
+  ifelse oldAge? [ set myChanceOfRecovery recoveryForElders ] [ set myChanceOfRecovery recoveryForOtherThanElders ]
+  if durationForWhichInfected > duration                        ;; If the turtle has survived past the virus' duration, then
+    [ ifelse random-float 100 < myChanceOfRecovery   ;; either recover or die
+      [ become-immune ]
+      [ die ] ]
+end
+
+to-report immune?
+  report remaining-immunity > 0
+end
+
+to startup
+  setup-constants
 end
 
 @#$#@#$#@
 GRAPHICS-WINDOW
-345
-11
-782
-449
+0
+112
+429
+542
 -1
 -1
-13.0
+12.03
 1
 10
 1
@@ -147,22 +160,67 @@ GRAPHICS-WINDOW
 1
 1
 1
--16
-16
--16
-16
-0
-0
+-17
+17
+-17
+17
+1
+1
 1
 ticks
-30.0
+20.0
+
+SLIDER
+1047
+302
+1284
+335
+duration
+duration
+0.0
+99.0
+20.0
+1.0
+1
+days
+HORIZONTAL
+
+SLIDER
+1046
+350
+1287
+383
+recoveryForOtherThanElders
+recoveryForOtherThanElders
+0.0
+100.0
+73.0
+1.0
+1
+%
+HORIZONTAL
+
+SLIDER
+777
+249
+1010
+282
+infection-probability
+infection-probability
+0.0
+100.0
+97.0
+1.0
+1
+%
+HORIZONTAL
 
 BUTTON
-791
-11
-911
-44
-setup the model
+479
+115
+614
+150
+SETUP THE MODEL
 setup
 NIL
 1
@@ -175,11 +233,11 @@ NIL
 1
 
 BUTTON
-790
-52
-913
-85
-Go
+644
+115
+780
+151
+PLAY
 go
 T
 1
@@ -189,167 +247,186 @@ NIL
 NIL
 NIL
 NIL
-1
-
-SLIDER
-931
-10
-1056
-43
-population
-population
-2
-300
-102.0
-1
-1
-NIL
-HORIZONTAL
+0
 
 PLOT
-0
-179
-328
-454
-spread
+432
+170
+739
+432
+POPULATION
 days
-infected %
+PERSON
 0.0
-10.0
+52.0
 0.0
-10.0
+200.0
 true
-false
+true
 "" ""
 PENS
-"default" 1.0 0 -16777216 true "" "plot infected"
-"pen-1" 1.0 0 -13840069 true "" "plot recovered"
+"Infected" 1.0 0 -2674135 true "" "plot count turtles with [ isInfected? ]"
+"Healthy" 1.0 0 -13840069 true "" "plot count turtles with [ not isInfected? and not immune? ]"
+"Unaffected" 1.0 0 -9276814 true "" "plot count turtles with [ immune? or not isInfected? ]"
+"Immuned" 1.0 0 -11221820 true "" "plot count turtles with [ immune? ]"
 
-MONITOR
-13
-63
-187
-108
-percentage of popn infected
-infected
-1
-1
-11
-
-MONITOR
-23
+SLIDER
+776
+351
+1012
+384
+population
+population
 10
-198
-55
-days
-ticks
-0
-1
-11
-
-SLIDER
-933
+500
+260.0
 50
-1083
-83
-infected_probability
-infected_probability
-0
-100
-6.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-935
-93
-1085
-126
-recovery_efficiency
-recovery_efficiency
-0
-100
-45.0
-1
 1
 NIL
 HORIZONTAL
 
 MONITOR
-41
-117
-111
-162
-recovered
-recovered
+827
+191
+902
+236
+NIL
+%infected
 1
 1
 11
 
-SLIDER
-936
-136
-1083
-169
-immunity
-immunity
+MONITOR
+902
+191
+976
+236
+NIL
+%immune
+1
+1
+11
+
+MONITOR
+976
+191
+1050
+236
+months
+ticks / 30
+1
+1
+11
+
+CHOOSER
+1046
+399
+1288
+444
+turtle-shape
+turtle-shape
+"shapeOfPerson"
+0
+
+MONITOR
+827
+144
+939
+189
+population
+count turtles
+17
+1
+11
+
+MONITOR
+947
+144
+1089
+189
+people > 65 years age
+count turtles with [ oldAge? = true ]
 0
 1
-0.0
+11
+
+SLIDER
+777
+302
+1012
+335
+recoveryForElders
+recoveryForElders
+0
+100
+26.0
+1
+1
+%
+HORIZONTAL
+
+SLIDER
+774
+399
+1012
+432
+mobility-probability
+mobility-probability
+0
+100
+100.0
+1
+1
+%
+HORIZONTAL
+
+TEXTBOX
+55
+50
+366
+105
+COVID SIMULATION
+30
+26.0
+1
+
+SLIDER
+1047
+251
+1282
+284
+vaccinated
+vaccinated
+0
+100
+69.0
 1
 1
 NIL
 HORIZONTAL
 
-MONITOR
-127
-117
-189
-162
-immuned
-immuned
+TEXTBOX
+488
+10
+558
+29
+BUTTONS
+15
+83.0
 1
+
+MONITOR
+1050
+191
+1123
+236
+NIL
+vaccinated
+0
 1
 11
 
 @#$#@#$#@
-## WHAT IS IT?
-
-(a general understanding of what the model is trying to show or explain)
-
-## HOW IT WORKS
-
-(what rules the agents use to create the overall behavior of the model)
-
-## HOW TO USE IT
-
-(how to use the model, including a description of each of the items in the Interface tab)
-
-## THINGS TO NOTICE
-
-(suggested things for the user to notice while running the model)
-
-## THINGS TO TRY
-
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
-
-## EXTENDING THE MODEL
-
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
-
-## NETLOGO FEATURES
-
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
-
-## RELATED MODELS
-
-(models in the NetLogo Models Library and elsewhere which are of related interest)
-
-## CREDITS AND REFERENCES
-
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
 @#$#@#$#@
 default
 true
@@ -531,6 +608,21 @@ Rectangle -7500403 true true 127 79 172 94
 Polygon -7500403 true true 195 90 240 150 225 180 165 105
 Polygon -7500403 true true 105 90 60 150 75 180 135 105
 
+person farmer
+false
+0
+Polygon -7500403 true true 105 90 120 195 90 285 105 300 135 300 150 225 165 300 195 300 210 285 180 195 195 90
+Polygon -1 true false 60 195 90 210 114 154 120 195 180 195 187 157 210 210 240 195 195 90 165 90 150 105 150 150 135 90 105 90
+Circle -7500403 true true 110 5 80
+Rectangle -7500403 true true 127 79 172 94
+Polygon -13345367 true false 120 90 120 180 120 195 90 285 105 300 135 300 150 225 165 300 195 300 210 285 180 195 180 90 172 89 165 135 135 135 127 90
+Polygon -6459832 true false 116 4 113 21 71 33 71 40 109 48 117 34 144 27 180 26 188 36 224 23 222 14 178 16 167 0
+Line -16777216 false 225 90 270 90
+Line -16777216 false 225 15 225 90
+Line -16777216 false 270 15 270 90
+Line -16777216 false 247 15 247 90
+Rectangle -6459832 true false 240 90 255 300
+
 plant
 false
 0
@@ -542,22 +634,6 @@ Polygon -7500403 true true 165 180 165 210 225 180 255 120 210 135
 Polygon -7500403 true true 135 105 90 60 45 45 75 105 135 135
 Polygon -7500403 true true 165 105 165 135 225 105 255 45 210 60
 Polygon -7500403 true true 135 90 120 45 150 15 180 45 165 90
-
-sheep
-false
-15
-Circle -1 true true 203 65 88
-Circle -1 true true 70 65 162
-Circle -1 true true 150 105 120
-Polygon -7500403 true false 218 120 240 165 255 165 278 120
-Circle -7500403 true false 214 72 67
-Rectangle -1 true true 164 223 179 298
-Polygon -1 true true 45 285 30 285 30 240 15 195 45 210
-Circle -1 true true 3 83 150
-Rectangle -1 true true 65 221 80 296
-Polygon -1 true true 195 285 210 285 210 240 240 210 195 210
-Polygon -7500403 true false 276 85 285 105 302 99 294 83
-Polygon -7500403 true false 219 85 210 105 193 99 201 83
 
 square
 false
@@ -642,13 +718,6 @@ Line -7500403 true 216 40 79 269
 Line -7500403 true 40 84 269 221
 Line -7500403 true 40 216 269 79
 Line -7500403 true 84 40 221 269
-
-wolf
-false
-0
-Polygon -16777216 true false 253 133 245 131 245 133
-Polygon -7500403 true true 2 194 13 197 30 191 38 193 38 205 20 226 20 257 27 265 38 266 40 260 31 253 31 230 60 206 68 198 75 209 66 228 65 243 82 261 84 268 100 267 103 261 77 239 79 231 100 207 98 196 119 201 143 202 160 195 166 210 172 213 173 238 167 251 160 248 154 265 169 264 178 247 186 240 198 260 200 271 217 271 219 262 207 258 195 230 192 198 210 184 227 164 242 144 259 145 284 151 277 141 293 140 299 134 297 127 273 119 270 105
-Polygon -7500403 true true -1 195 14 180 36 166 40 153 53 140 82 131 134 133 159 126 188 115 227 108 236 102 238 98 268 86 269 92 281 87 269 103 269 113
 
 x
 false
