@@ -208,17 +208,17 @@ infection-probability
 infection-probability
 0.0
 100.0
-97.0
+15.0
 1.0
 1
 %
 HORIZONTAL
 
 BUTTON
-479
-115
-614
-150
+437
+386
+572
+421
 SETUP THE MODEL
 setup
 NIL
@@ -232,10 +232,10 @@ NIL
 1
 
 BUTTON
-644
-115
-780
-151
+603
+386
+739
+422
 PLAY
 go
 T
@@ -250,9 +250,9 @@ NIL
 
 PLOT
 432
-170
+113
 739
-432
+375
 POPULATION
 days
 PERSON
@@ -278,17 +278,17 @@ population
 population
 10
 500
-260.0
+310.0
 50
 1
-NIL
+people
 HORIZONTAL
 
 MONITOR
-827
-191
-902
-236
+879
+189
+954
+234
 NIL
 %infected
 1
@@ -296,10 +296,10 @@ NIL
 11
 
 MONITOR
-902
-191
-976
-236
+954
+189
+1028
+234
 NIL
 %immune
 1
@@ -307,10 +307,10 @@ NIL
 11
 
 MONITOR
-976
-191
-1050
-236
+1028
+189
+1102
+234
 months
 ticks / 30
 1
@@ -318,20 +318,20 @@ ticks / 30
 11
 
 CHOOSER
-1046
-399
-1288
-444
+525
+433
+652
+478
 turtle-shape
 turtle-shape
 "shapeOfPerson"
 0
 
 MONITOR
-827
-144
-939
-189
+879
+142
+1026
+187
 population
 count turtles
 17
@@ -339,10 +339,10 @@ count turtles
 11
 
 MONITOR
-947
-144
-1089
-189
+1027
+142
+1175
+187
 people > 65 years age
 count turtles with [ oldAge? = true ]
 0
@@ -365,10 +365,10 @@ recoveryForElders
 HORIZONTAL
 
 SLIDER
-774
-399
-1012
-432
+913
+396
+1151
+429
 mobility-probability
 mobility-probability
 0
@@ -380,13 +380,13 @@ mobility-probability
 HORIZONTAL
 
 TEXTBOX
-55
-50
-366
-105
+319
+37
+630
+92
 COVID SIMULATION
 30
-26.0
+104.0
 1
 
 SLIDER
@@ -398,22 +398,33 @@ vaccinated
 vaccinated
 0
 100
-69.0
+0.0
 1
 1
-NIL
+%
 HORIZONTAL
 
 MONITOR
-1050
-191
-1123
-236
+1102
+189
+1175
+234
 NIL
 vaccinated
 0
 1
 11
+
+MONITOR
+960
+80
+1089
+141
+Inital Population
+population
+17
+1
+15
 
 @#$#@#$#@
 @#$#@#$#@
