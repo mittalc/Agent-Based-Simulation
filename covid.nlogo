@@ -178,7 +178,7 @@ duration
 duration
 0.0
 99.0
-20.0
+67.0
 1.0
 1
 days
@@ -193,7 +193,7 @@ recoveryForOtherThanElders
 recoveryForOtherThanElders
 0.0
 100.0
-73.0
+46.0
 1.0
 1
 %
@@ -208,7 +208,7 @@ infection-probability
 infection-probability
 0.0
 100.0
-15.0
+16.0
 1.0
 1
 %
@@ -268,6 +268,7 @@ PENS
 "Healthy" 1.0 0 -13840069 true "" "plot count turtles with [ not isInfected? and not immune? ]"
 "Unaffected" 1.0 0 -9276814 true "" "plot count turtles with [ immune? or not isInfected? ]"
 "Immuned" 1.0 0 -11221820 true "" "plot count turtles with [ immune? ]"
+"Dead" 1.0 0 -1184463 true "" "plot population - count turtles"
 
 SLIDER
 776
@@ -285,9 +286,9 @@ people
 HORIZONTAL
 
 MONITOR
-879
+842
 189
-954
+917
 234
 NIL
 %infected
@@ -296,9 +297,9 @@ NIL
 11
 
 MONITOR
-954
+917
 189
-1028
+991
 234
 NIL
 %immune
@@ -307,9 +308,9 @@ NIL
 11
 
 MONITOR
-1028
+991
 189
-1102
+1065
 234
 months
 ticks / 30
@@ -358,7 +359,7 @@ recoveryForElders
 recoveryForElders
 0
 100
-26.0
+30.0
 1
 1
 %
@@ -398,16 +399,16 @@ vaccinated
 vaccinated
 0
 100
-0.0
+52.0
 1
 1
 %
 HORIZONTAL
 
 MONITOR
-1102
+1065
 189
-1175
+1138
 234
 NIL
 vaccinated
@@ -425,6 +426,17 @@ population
 17
 1
 15
+
+MONITOR
+1138
+189
+1207
+234
+Dead
+population - count turtles
+17
+1
+11
 
 @#$#@#$#@
 @#$#@#$#@
