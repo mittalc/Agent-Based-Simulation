@@ -163,8 +163,8 @@ GRAPHICS-WINDOW
 17
 -17
 17
-1
-1
+0
+0
 1
 ticks
 20.0
