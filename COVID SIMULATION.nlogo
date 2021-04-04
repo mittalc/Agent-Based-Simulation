@@ -55,7 +55,7 @@ to setup-turtles
       get-healthy
       ifelse random 100 < mobility-probability [set mobile? true] [set mobile? false]
     ]
-  ask n-of 2 turtles
+  ask n-of 5 turtles
    [set isInfected? true ]                                      ;; setting values after selection
 end
 
@@ -183,7 +183,7 @@ end
 
 ;;  function to check the recovery
 to recover-or-die
-  ifelse oldAge? [ set myChanceOfRecovery recoveryForElders ] [ set myChanceOfRecovery recoveryForOtherThanElders ]
+  ifelse oldAge? [ set myChanceOfRecovery recoveryForOtherThanElders ] [ set myChanceOfRecovery recoveryForElders ] 
   if durationForWhichInfected > duration                                                   ;; if else condition
     [ ifelse random-float 100 < myChanceOfRecovery
       [ become-immune ]
