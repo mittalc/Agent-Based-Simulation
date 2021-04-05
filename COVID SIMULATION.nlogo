@@ -1,39 +1,27 @@
-;; Covid Simulator
-;; Agent Based Model
-;; by- Jeel , Chirag , Elias , Daljeet
-
-
-;; global variables
 globals
-  [
-    %vaccinated
-    %infected
-    %immune
-    stopTheProg?         ;; if %infected is 0, end the simulation
+  [ %vaccinated
+    %infected            ;; what % of the population is infectious
+    %immune              ;; what % of the population is immune
+    stopTheProg?         ;; end the simulation if %infected==0
     isVaccinated?
-    lifespan
-    immunity-duration
+    lifespan             ;; the lifespan of a turtle
+    immunity-duration    ;; how many days immunity lasts
+
   ]
 
-
-;; Every person's variables
 turtles-own
-  [
-    isInfected?
-    oldAge?
-    myChanceOfRecovery
-    remaining-immunity
-    durationForWhichInfected
-    ageOfPerson
-    mobile?
-  ]
+  [ isInfected?                ;; if turtle-infected or not
+    oldAge?                    ;; if turtleAge>65
+    myChanceOfRecovery         ;; if oldAge? true, recoveryForElders else recoveryForOtherThanElders
+    remaining-immunity         ;; days of immunity the turtle has left
+    durationForWhichInfected   ;; days for the turtle has been infectious
+    ageOfPerson                ;; age of person
+    mobile? ]                  ;; if mobility of person is true or false
 
 
-
-;; setup function
 to setup
   clear-all
-  setup-constants                 ;; calling back funtions
+  setup-constants
   setup-turtles
   update-global-variables
   update-display
@@ -41,164 +29,115 @@ to setup
 end
 
 
-
-;; function to setup turtles
 to setup-turtles
   create-turtles population
-    [
-      setxy random-pxcor random-pycor
+    [ setxy random-pxcor random-pycor
       set ageOfPerson random lifespan
-      ifelse ageOfPerson > 365 * 65 [ set oldAge? true ] [ set oldAge? false ]                           ;; if else condition
+      ifelse ageOfPerson > 365 * 65 [ set oldAge? true ] [ set oldAge? false ]
       set durationForWhichInfected 0
       set remaining-immunity 0
       set size 2
       get-healthy
-      ifelse random 100 < mobility-probability [set mobile? true] [set mobile? false]
-    ]
-  ask n-of 5 turtles
-   [set isInfected? true ]                                      ;; setting values after selection
+      ifelse random 100 < mobility-probability [set mobile? true] [set mobile? false] ]
+  ask n-of 2 turtles
+   [set isInfected? true ]
 end
 
-
-
-;; function to check vaccination
-to get-sick
-  ifelse random 100 > vaccinated[                           ;; if else condition
+to get-sick ;; turtle procedure
+  ifelse random 100 > vaccinated[
   set isVaccinated? false
   set isInfected? true
     set remaining-immunity 0]
-  [ set isVaccinated? true                                      ;; setting values
+  [ set isVaccinated? true
     set isInfected? false]
 end
 
-
-
-;; function to check healthyness
-to get-healthy
+to get-healthy ;; turtle procedure
   set isInfected? false
-  set remaining-immunity 0                                      ;; setting values
+  set remaining-immunity 0
   set durationForWhichInfected 0
 end
 
-
-
-;; function to check immunity
-to become-immune
+to become-immune ;; turtle procedure
   set isInfected? false
-  set durationForWhichInfected 0                                      ;; setting values
+  set durationForWhichInfected 0
   set remaining-immunity immunity-duration
 end
 
 
 
-;; function to setup the constants
 to setup-constants
-  set lifespan 90 * 365
-  set immunity-duration 265                                      ;; initializing values
+  set lifespan 90 * 365      ;; 90 times 365 days = 50 years = 32850 days old
+  set immunity-duration 265  ;; this value is approximated for the sake of testing, not based in scientific knowledge.
   set stopTheProg? false
 end
 
-
-
-
-
-;; main go function
 to go
-  if not stopTheProg?                                      ;; if else condition
+  if not stopTheProg?
   [ ask turtles [
      get-older
      move
      if isInfected? [ recover-or-die ]
      if isInfected? [infect ]
     ]
-   update-global-variables                        ;; calling back functions
+   update-global-variables
    update-display
    tick
   ]
 end
 
-
-
-
-
-;; function to update the global variables
 to update-global-variables
   if count turtles > 0
     [ set %infected (count turtles with [ isInfected? ] / count turtles) * 100
       set %immune (count turtles with [ immune? ] / count turtles) * 100
-      set stopTheProg? %infected = 0 ]                                                        ;;the simulation ends when no turtles are infected
+      set stopTheProg? %infected = 0 ] ;;the simulation ends when no turtles are infected
 end
 
-
-
-
-
-;; function to display the updates
 to update-display
   ask turtles
     [
       if turtle-shape = "shapeOfPerson" [ ifelse ageOfPerson > 65 * 365 [ set shape "person farmer" ][ set shape "person"]]
-      set color ifelse-value isInfected? [ red ] [ ifelse-value immune? [ grey ] [ green ] ] ]                                          ;; if else condition
+      set color ifelse-value isInfected? [ red ] [ ifelse-value immune? [ grey ] [ green ] ] ]
 end
 
 
-
-
-
-
-;; function to check the age
-to get-older
-  ifelse ageOfPerson > lifespan [ die ] [if ageOfPerson > 65 * 365 [ set oldAge? true ] ]                           ;; if else condition
+to get-older ;; turtle procedure
+  ifelse ageOfPerson > lifespan [ die ] [if ageOfPerson > 65 * 365 [ set oldAge? true ] ]
   if immune? [ set remaining-immunity remaining-immunity - 1 ]
   if isInfected? [ set durationForWhichInfected durationForWhichInfected + 1 ]
 end
 
 
-
-
-
-
-;; function to check the mobility
-to move
+to move ;; turtle procedure
   rt random 100
   lt random 100
-  ifelse random 100 < mobility-probability [set mobile? true] [set mobile? false]                           ;; if else condition
+  ifelse random 100 < mobility-probability [set mobile? true] [set mobile? false]
   if mobile? [ fd 1 ]
   ;;fd 1
 end
 
-
-
-
-;; function to check the infection
-to infect
+;; If a turtle is sick, it infects other turtles on the same patch.
+;; Immune turtles don't get sick.
+to infect ;; turtle procedure
   ask other turtles-here with [ not isInfected? and not immune? ]
     [ if random-float 100 < infection-probability
       [ get-sick ] ]
 end
 
-
-
-
-
-;;  function to check the recovery
-to recover-or-die
-  ifelse oldAge? [ set myChanceOfRecovery recoveryForOtherThanElders ] [ set myChanceOfRecovery recoveryForElders ] 
-  if durationForWhichInfected > duration                                                   ;; if else condition
-    [ ifelse random-float 100 < myChanceOfRecovery
+;; Once the turtle has been sick long enough, it
+;; either recovers (and becomes immune) or it dies.
+to recover-or-die ;; turtle procedure
+  ifelse oldAge? [ set myChanceOfRecovery recoveryForElders ] [ set myChanceOfRecovery recoveryForOtherThanElders ]
+  if durationForWhichInfected > duration                        ;; If the turtle has survived past the virus' duration, then
+    [ ifelse random-float 100 < myChanceOfRecovery   ;; either recover or die
       [ become-immune ]
       [ die ] ]
 end
-
 
 to-report immune?
   report remaining-immunity > 0
 end
 
-
-
-
-;; startup function
 to startup
   setup-constants
 end
@@ -246,10 +185,10 @@ days
 HORIZONTAL
 
 SLIDER
-1046
-350
-1287
-383
+775
+345
+1016
+378
 recoveryForOtherThanElders
 recoveryForOtherThanElders
 0.0
@@ -332,10 +271,10 @@ PENS
 "Dead" 1.0 0 -1184463 true "" "plot population - count turtles"
 
 SLIDER
-776
-351
-1012
-384
+1047
+346
+1283
+379
 population
 population
 10
@@ -498,6 +437,16 @@ population - count turtles
 17
 1
 11
+
+TEXTBOX
+1100
+318
+1250
+336
+(duration of infection)
+11
+0.0
+1
 
 @#$#@#$#@
 @#$#@#$#@

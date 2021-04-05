@@ -40,7 +40,7 @@ to setup-turtles
       get-healthy
       ifelse random 100 < mobility-probability [set mobile? true] [set mobile? false] ]
   ask n-of 2 turtles
-    [ get-sic ]
+   [set isInfected? true ]
 end
 
 to get-sick ;; turtle procedure
@@ -185,10 +185,10 @@ days
 HORIZONTAL
 
 SLIDER
-1046
-350
-1287
-383
+775
+345
+1016
+378
 recoveryForOtherThanElders
 recoveryForOtherThanElders
 0.0
@@ -271,10 +271,10 @@ PENS
 "Dead" 1.0 0 -1184463 true "" "plot population - count turtles"
 
 SLIDER
-776
-351
-1012
-384
+1052
+346
+1288
+379
 population
 population
 10
@@ -437,6 +437,16 @@ population - count turtles
 17
 1
 11
+
+TEXTBOX
+1132
+334
+1282
+352
+(duration of infection)
+11
+0.0
+1
 
 @#$#@#$#@
 @#$#@#$#@
