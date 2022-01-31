@@ -1,6 +1,6 @@
 ;; Covid Simulator
 ;; Agent Based Model
-;; by- Jeel , Chirag , Elias , Daljeet
+
 
 
 ;; global variables
