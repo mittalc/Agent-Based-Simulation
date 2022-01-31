@@ -9,12 +9,8 @@ leading to positive impacts on the evolution of COVID-19.
 # Tools Used
 * Netlogo
 * HTML
-
-# Contributors
-* Chirag Mittal
-* Daljeet Singh
-* Jeel Bera
-* Md Elias Khan
+* JavaScipt
+* CSS
 
 # Methodology - Agile
 * Project Proposal - https://pdfhost.io/v/~Cn.76YwA_Project_proposalpdf.pdf
