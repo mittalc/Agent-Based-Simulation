@@ -1,6 +1,6 @@
 # Agent based Simulation
  Covid Simulator
-https://mittalc.github.io/Agent-Based-Simulation/
+https://mittalc.github.io/COVID-Agent-Based-Model-Simulation/
 
 We aim to simulate the spread of Covid 19 using a simple covid simulation tool.
 The tool can help facilitate more effective and faster-paced decision-making,
